@@ -25,6 +25,9 @@ export const upload = multer({
   },
 });
 
-export function uploadSingle(fieldName = 'img') {
-  return upload.single(fieldName);
+export function uploadProductImages() {
+  return upload.fields([
+    { name: 'img', maxCount: 1 },
+    { name: 'gallery', maxCount: 20 },
+  ]);
 }

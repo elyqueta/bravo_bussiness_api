@@ -14,11 +14,13 @@ const descriptionSchema = z
 const badgeSchema = z.enum(['Sale', 'Premium', 'Novo']);
 
 const priceSchema = z
+  .coerce
   .number({ error: 'price é obrigatório e deve ser um número.' })
   .int('price deve ser um número inteiro (Kz).')
   .positive('price deve ser maior que zero.');
 
 const oldPriceSchema = z
+  .coerce
   .number({ error: 'oldPrice deve ser um número.' })
   .int('oldPrice deve ser um número inteiro (Kz).')
   .positive('oldPrice deve ser maior que zero.');
@@ -26,8 +28,6 @@ const oldPriceSchema = z
 const categorySlugSchema = z.string().trim().min(1, 'categorySlug é obrigatório.');
 
 const featuresSchema = z.array(z.string().trim()).max(50, 'features deve ter no máximo 50 itens.');
-
-const gallerySchema = z.array(z.string().url('Cada item de gallery deve ser uma URL válida.')).max(20, 'gallery deve ter no máximo 20 itens.');
 
 function validatePriceConsistency(
   data: { price: number; oldPrice?: number | null },
@@ -55,7 +55,6 @@ export const createProductSchema = z
     oldPrice: oldPriceSchema.optional(),
     badge: badgeSchema.optional(),
     features: featuresSchema.optional(),
-    gallery: gallerySchema.optional(),
   })
   .strict()
   .superRefine(validatePriceConsistency);
@@ -69,7 +68,6 @@ export const updateProductSchema = z
     oldPrice: oldPriceSchema.nullable().optional(),
     badge: badgeSchema.nullable().optional(),
     features: featuresSchema.nullable().optional(),
-    gallery: gallerySchema.nullable().optional(),
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {

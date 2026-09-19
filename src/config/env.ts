@@ -39,6 +39,18 @@ const envSchema = z.object({
     .min(10, 'BCRYPT_SALT_ROUNDS deve ser no mínimo 10 por segurança.')
     .max(15, 'BCRYPT_SALT_ROUNDS acima de 15 é impraticavelmente lento.')
     .default(12),
+
+  CLOUDINARY_CLOUD_NAME: z
+    .string({ error: 'CLOUDINARY_CLOUD_NAME é obrigatória' })
+    .min(1, 'CLOUDINARY_CLOUD_NAME não pode ser vazia'),
+
+  CLOUDINARY_API_KEY: z
+    .string({ error: 'CLOUDINARY_API_KEY é obrigatória' })
+    .min(1, 'CLOUDINARY_API_KEY não pode ser vazia'),
+
+  CLOUDINARY_API_SECRET: z
+    .string({ error: 'CLOUDINARY_API_SECRET é obrigatória' })
+    .min(1, 'CLOUDINARY_API_SECRET não pode ser vazia'),
 });
 
 export type Env = z.infer<typeof envSchema>;

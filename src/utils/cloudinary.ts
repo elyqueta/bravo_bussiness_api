@@ -21,8 +21,14 @@ export async function uploadImage(file: Express.Multer.File): Promise<string> {
           ],
         },
         (error, result) => {
-          if (error || !result?.secure_url) {
-            reject(new Error('Falha ao enviar imagem para o Cloudinary.'));
+          if (error) {
+            console.error('Cloudinary upload error:', error);
+            reject(new Error(`Falha ao enviar imagem para o Cloudinary: ${error.message}`));
+            return;
+          }
+
+          if (!result?.secure_url) {
+            reject(new Error('Cloudinary retornou uma resposta sem URL.'));
             return;
           }
 

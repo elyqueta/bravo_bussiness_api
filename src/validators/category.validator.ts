@@ -6,7 +6,11 @@ const labelSchema = z
   .min(1, 'label não pode ser vazio.')
   .max(100, 'label deve ter no máximo 100 caracteres.');
 
-const iconSchema = z.string().trim().max(10, 'icon deve ter no máximo 10 caracteres.');
+const iconSchema = z
+  .string()
+  .trim()
+  .min(3, 'icon deve ter pelo menos 3 caracteres.')
+  .max(30, 'icon deve ter no máximo 30 caracteres.');
 
 const prefixSchema = z
   .string()

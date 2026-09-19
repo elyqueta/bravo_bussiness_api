@@ -5,7 +5,11 @@ import { CreateProductInput, UpdateProductInput } from '../validators/product.va
 import { NotFoundError } from '../errors';
 import { uploadImage } from '../utils/cloudinary';
 
-async function create(input: CreateProductInput, imageFile: Express.Multer.File): Promise<Product> {
+async function create(
+  input: CreateProductInput,
+  imageFile: Express.Multer.File,
+  galleryFiles: Express.Multer.File[] = []
+): Promise<Product> {
   const category = await categoryService.findBySlug(input.categorySlug);
 
   const countResult = await productRepository.findAll(
@@ -18,6 +22,12 @@ async function create(input: CreateProductInput, imageFile: Express.Multer.File)
 
   const img = await uploadImage(imageFile);
 
+  const gallery: string[] = [];
+  for (const file of galleryFiles) {
+    const url = await uploadImage(file);
+    gallery.push(url);
+  }
+
   const data: CreateProductData = {
     id: productId,
     categorySlug: category.slug,
@@ -28,7 +38,7 @@ async function create(input: CreateProductInput, imageFile: Express.Multer.File)
     img,
     badge: input.badge ?? null,
     features: input.features ?? [],
-    gallery: input.gallery ?? [],
+    gallery,
   };
 
   return productRepository.create(data);
@@ -54,7 +64,8 @@ async function findById(id: string): Promise<Product> {
 async function update(
   id: string,
   input: UpdateProductInput,
-  imageFile?: Express.Multer.File
+  imageFile?: Express.Multer.File,
+  galleryFiles?: Express.Multer.File[]
 ): Promise<Product> {
   if (input.categorySlug !== undefined) {
     await categoryService.findBySlug(input.categorySlug);
@@ -64,6 +75,15 @@ async function update(
 
   if (imageFile) {
     (updateData as UpdateProductInput & { img: string }).img = await uploadImage(imageFile);
+  }
+
+  if (galleryFiles && galleryFiles.length > 0) {
+    const gallery: string[] = [];
+    for (const file of galleryFiles) {
+      const url = await uploadImage(file);
+      gallery.push(url);
+    }
+    (updateData as UpdateProductInput & { gallery: string[] }).gallery = gallery;
   }
 
   const updated = await productRepository.update(id, updateData);
