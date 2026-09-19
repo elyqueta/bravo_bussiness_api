@@ -7,10 +7,15 @@ import {
   ProductIdParam,
   UpdateProductInput,
 } from '../validators/product.validator';
+import { BadRequestError } from '../errors';
 
 const create = asyncHandler(
   async (req: Request<Record<string, string>, unknown, CreateProductInput>, res: Response) => {
-    const product = await productService.create(req.body);
+    if (!req.file) {
+      throw new BadRequestError('Arquivo de imagem obrigatório.');
+    }
+
+    const product = await productService.create(req.body, req.file);
 
     res.status(201).json({
       status: 'success',
@@ -50,7 +55,7 @@ const findById = asyncHandler(async (req: Request<ProductIdParam>, res: Response
 
 const update = asyncHandler(
   async (req: Request<ProductIdParam, unknown, UpdateProductInput>, res: Response) => {
-    const product = await productService.update(req.params.id, req.body);
+    const product = await productService.update(req.params.id, req.body, req.file);
 
     res.status(200).json({
       status: 'success',

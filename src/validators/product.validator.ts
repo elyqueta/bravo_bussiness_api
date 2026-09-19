@@ -23,12 +23,6 @@ const oldPriceSchema = z
   .int('oldPrice deve ser um número inteiro (Kz).')
   .positive('oldPrice deve ser maior que zero.');
 
-const imgSchema = z
-  .string()
-  .trim()
-  .url('img deve ser uma URL válida.')
-  .max(500, 'img deve ter no máximo 500 caracteres.');
-
 const categorySlugSchema = z.string().trim().min(1, 'categorySlug é obrigatório.');
 
 const featuresSchema = z.array(z.string().trim()).max(50, 'features deve ter no máximo 50 itens.');
@@ -59,7 +53,6 @@ export const createProductSchema = z
     description: descriptionSchema.optional(),
     price: priceSchema,
     oldPrice: oldPriceSchema.optional(),
-    img: imgSchema,
     badge: badgeSchema.optional(),
     features: featuresSchema.optional(),
     gallery: gallerySchema.optional(),
@@ -74,7 +67,6 @@ export const updateProductSchema = z
     description: descriptionSchema.nullable().optional(),
     price: priceSchema.optional(),
     oldPrice: oldPriceSchema.nullable().optional(),
-    img: imgSchema.optional(),
     badge: badgeSchema.nullable().optional(),
     features: featuresSchema.nullable().optional(),
     gallery: gallerySchema.nullable().optional(),

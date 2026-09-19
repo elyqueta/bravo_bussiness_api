@@ -3,6 +3,7 @@ import { productController } from '../controllers/product.controller';
 import { validate } from '../middlewares/validate';
 import { authenticate } from '../middlewares/authenticate';
 import { requireAdmin } from '../middlewares/requireAdmin';
+import { uploadSingle } from '../middlewares/upload';
 import {
   createProductSchema,
   listProductsQuerySchema,
@@ -30,6 +31,34 @@ const router = Router();
  *     requestBody:
  *       required: true
  *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               categorySlug:
+ *                 type: string
+ *               price:
+ *                 type: integer
+ *               img:
+ *                 type: string
+ *                 format: binary
+ *               oldPrice:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               badge:
+ *                 type: string
+ *                 enum: [Sale, Premium, Novo]
+ *               features:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               gallery:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/CreateProductInput'
@@ -72,6 +101,7 @@ router.post(
   '/',
   authenticate,
   requireAdmin,
+  uploadSingle('img'),
   validate({ body: createProductSchema }),
   productController.create
 );
@@ -160,6 +190,34 @@ router.get('/:id', validate({ params: productIdParamSchema }), productController
  *     requestBody:
  *       required: true
  *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               categorySlug:
+ *                 type: string
+ *               price:
+ *                 type: integer
+ *               img:
+ *                 type: string
+ *                 format: binary
+ *               oldPrice:
+ *                 type: integer
+ *               description:
+ *                 type: string
+ *               badge:
+ *                 type: string
+ *                 enum: [Sale, Premium, Novo]
+ *               features:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               gallery:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/UpdateProductInput'
@@ -202,6 +260,7 @@ router.patch(
   '/:id',
   authenticate,
   requireAdmin,
+  uploadSingle('img'),
   validate({ params: productIdParamSchema, body: updateProductSchema }),
   productController.update
 );
@@ -256,3 +315,4 @@ router.delete(
 );
 
 export default router;
+

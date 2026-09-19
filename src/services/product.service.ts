@@ -3,8 +3,9 @@ import { categoryService } from './category.service';
 import { CreateProductData, Product, ProductFilters } from '../types/product.types';
 import { CreateProductInput, UpdateProductInput } from '../validators/product.validator';
 import { NotFoundError } from '../errors';
+import { uploadImage } from '../utils/cloudinary';
 
-async function create(input: CreateProductInput): Promise<Product> {
+async function create(input: CreateProductInput, imageFile: Express.Multer.File): Promise<Product> {
   const category = await categoryService.findBySlug(input.categorySlug);
 
   const countResult = await productRepository.findAll(
@@ -15,6 +16,8 @@ async function create(input: CreateProductInput): Promise<Product> {
   const nextSeq = countResult.total + 1;
   const productId = `BB-${category.prefix}${String(nextSeq).padStart(3, '0')}`;
 
+  const img = await uploadImage(imageFile);
+
   const data: CreateProductData = {
     id: productId,
     categorySlug: category.slug,
@@ -22,7 +25,7 @@ async function create(input: CreateProductInput): Promise<Product> {
     description: input.description ?? null,
     price: input.price,
     oldPrice: input.oldPrice ?? null,
-    img: input.img,
+    img,
     badge: input.badge ?? null,
     features: input.features ?? [],
     gallery: input.gallery ?? [],
@@ -48,12 +51,22 @@ async function findById(id: string): Promise<Product> {
   return product;
 }
 
-async function update(id: string, input: UpdateProductInput): Promise<Product> {
+async function update(
+  id: string,
+  input: UpdateProductInput,
+  imageFile?: Express.Multer.File
+): Promise<Product> {
   if (input.categorySlug !== undefined) {
     await categoryService.findBySlug(input.categorySlug);
   }
 
-  const updated = await productRepository.update(id, input);
+  const updateData: UpdateProductInput = { ...input };
+
+  if (imageFile) {
+    (updateData as UpdateProductInput & { img: string }).img = await uploadImage(imageFile);
+  }
+
+  const updated = await productRepository.update(id, updateData);
 
   if (!updated) {
     throw new NotFoundError(`Produto com id "${id}" não encontrado.`);
