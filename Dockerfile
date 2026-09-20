@@ -7,7 +7,7 @@ USER node
 WORKDIR /home/node/app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
 FROM base AS build
 COPY --chown=node:node . .
