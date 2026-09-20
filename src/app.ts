@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
 import productRoutes from './routes/product.routes';
 import adminRoutes from './routes/admin.routes';
+import seedRoutes from './routes/seed.routes';
 
 const app: Application = express();
 
@@ -74,6 +75,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/seed', seedRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
