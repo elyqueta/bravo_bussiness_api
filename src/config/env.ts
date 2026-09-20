@@ -67,7 +67,7 @@ function loadEnv(): Env {
     }
 
     console.error(
-      '\nVerifique o arquivo .env (use .env.example como referência) e tente novamente.\n'
+      '\nVerifique as variáveis de ambiente e tente novamente.\n'
     );
 
     process.exit(1);
