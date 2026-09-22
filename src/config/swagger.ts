@@ -160,7 +160,10 @@ const swaggerDefinition: swaggerJsdoc.OAS3Definition = {
 
 const options: swaggerJsdoc.Options = {
   definition: swaggerDefinition,
-  apis: [path.join(__dirname, '../routes/*.routes.ts')],
+  apis: [
+    path.join(__dirname, '../routes/*.routes.ts'),
+    path.join(__dirname, '../routes/*.routes.js'),
+  ],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
