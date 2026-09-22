@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.env = void 0;
-require("dotenv/config");
 const zod_1 = require("zod");
+if (process.env.NODE_ENV !== 'production') {
+    void import('dotenv/config');
+}
 const envSchema = zod_1.z.object({
     NODE_ENV: zod_1.z.enum(['development', 'production', 'test']).default('development'),
     PORT: zod_1.z.coerce.number({ error: 'PORT deve ser um número' }).int().positive().default(3000),
@@ -51,7 +53,7 @@ function loadEnv() {
             const campo = issue.path.join('.') || '(desconhecido)';
             console.error(`  • ${campo}: ${issue.message}`);
         }
-        console.error('\nVerifique o arquivo .env (use .env.example como referência) e tente novamente.\n');
+        console.error('\nVerifique as variáveis de ambiente e tente novamente.\n');
         process.exit(1);
     }
     return result.data;

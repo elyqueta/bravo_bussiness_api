@@ -163,7 +163,10 @@ const swaggerDefinition = {
 };
 const options = {
     definition: swaggerDefinition,
-    apis: [node_path_1.default.join(__dirname, '../routes/*.routes.ts')],
+    apis: [
+        node_path_1.default.join(__dirname, '../routes/*.routes.ts'),
+        node_path_1.default.join(__dirname, '../routes/*.routes.js'),
+    ],
 };
 exports.swaggerSpec = (0, swagger_jsdoc_1.default)(options);
 //# sourceMappingURL=swagger.js.map
