@@ -15,6 +15,8 @@ import seedRoutes from './routes/seed.routes';
 
 const app: Application = express();
 
+app.set('trust proxy', 1);
+
 app.use(cors(corsOptions));
 
 app.use(express.json());

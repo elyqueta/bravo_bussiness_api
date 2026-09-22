@@ -18,6 +18,7 @@ const product_routes_1 = __importDefault(require("./routes/product.routes"));
 const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const seed_routes_1 = __importDefault(require("./routes/seed.routes"));
 const app = (0, express_1.default)();
+app.set('trust proxy', 1);
 app.use((0, cors_1.default)(cors_2.corsOptions));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
