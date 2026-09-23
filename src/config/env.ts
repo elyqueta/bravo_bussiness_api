@@ -1,7 +1,8 @@
 import { z } from 'zod';
+import dotenv from 'dotenv';
 
 if (process.env.NODE_ENV !== 'production') {
-  void import('dotenv/config');
+  dotenv.config();
 }
 
 const envSchema = z.object({
