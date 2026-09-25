@@ -38,8 +38,8 @@ const router = Router();
  *               categorySlug: { type: string, example: roupas }
  *               name: { type: string, example: Camiseta Básica }
  *               description: { type: string, example: Camiseta 100% algodão }
- *               price: { type: integer, example: 14500 }
- *               oldPrice: { type: integer, example: 18000 }
+  *               price: { type: number, example: 14500.00 }
+  *               oldPrice: { type: number, example: 18000.00 }
  *               img: { type: string, format: binary }
  *               badge: { type: string, enum: [Sale, Premium, Novo] }
  *               features: { type: array, items: { type: string } }
@@ -208,8 +208,8 @@ router.get('/:id', validate({ params: productIdParamSchema }), productController
  *               categorySlug: { type: string, example: roupas }
  *               name: { type: string, example: Camiseta Básica }
  *               description: { type: string }
- *               price: { type: integer, example: 14500 }
- *               oldPrice: { type: integer, example: 18000 }
+  *               price: { type: number, example: 14500.00 }
+  *               oldPrice: { type: number, example: 18000.00 }
  *               img: { type: string, format: binary }
  *               badge: { type: string, enum: [Sale, Premium, Novo] }
  *               features: { type: array, items: { type: string } }

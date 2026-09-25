@@ -16,13 +16,11 @@ const badgeSchema = z.enum(['Sale', 'Premium', 'Novo']);
 const priceSchema = z
   .coerce
   .number({ error: 'price é obrigatório e deve ser um número.' })
-  .int('price deve ser um número inteiro (Kz).')
   .positive('price deve ser maior que zero.');
 
 const oldPriceSchema = z
   .coerce
   .number({ error: 'oldPrice deve ser um número.' })
-  .int('oldPrice deve ser um número inteiro (Kz).')
   .positive('oldPrice deve ser maior que zero.');
 
 const categorySlugSchema = z.string().trim().min(1, 'categorySlug é obrigatório.');
