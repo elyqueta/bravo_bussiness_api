@@ -37,7 +37,13 @@ const featuresSchema = z
     }
 
     if (typeof val === 'string') {
-      return val === '' ? [] : val.split(',').map((item) => item.trim()).filter(Boolean);
+      const trimmed = val.trim();
+
+      if (trimmed === '' || trimmed === '[]') {
+        return [];
+      }
+
+      return trimmed.split(',').map((item) => item.trim()).filter(Boolean);
     }
 
     return val;
