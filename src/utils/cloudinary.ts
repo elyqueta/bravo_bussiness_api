@@ -7,7 +7,12 @@ cloudinary.config({
   api_secret: env.CLOUDINARY_API_SECRET,
 });
 
-export async function uploadImage(file: Express.Multer.File): Promise<string> {
+export interface UploadedImage {
+  url: string;
+  publicId: string;
+}
+
+export async function uploadImage(file: Express.Multer.File): Promise<UploadedImage> {
   const buffer = file.buffer;
 
   return new Promise((resolve, reject) => {
@@ -28,16 +33,32 @@ export async function uploadImage(file: Express.Multer.File): Promise<string> {
             return;
           }
 
-          if (!result?.secure_url) {
-            reject(new Error('Cloudinary retornou uma resposta sem URL.'));
+          if (!result?.secure_url || !result?.public_id) {
+            reject(new Error('Cloudinary retornou uma resposta sem URL ou public_id.'));
             return;
           }
 
-          resolve(result.secure_url);
+          resolve({ url: result.secure_url, publicId: result.public_id });
         }
       )
       .end(buffer);
   });
+}
+
+export async function deleteImage(url: string): Promise<void> {
+  const publicId = getPublicIdFromUrl(url);
+
+  try {
+    await cloudinary.uploader.destroy(publicId);
+  } catch (error) {
+    console.error(`Falha ao eliminar imagem do Cloudinary (${publicId}):`, error);
+  }
+}
+
+function getPublicIdFromUrl(url: string): string {
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/);
+  if (!match || !match[1]) return url;
+  return match[1];
 }
 
 export { cloudinary };

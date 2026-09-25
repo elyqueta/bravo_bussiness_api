@@ -11,7 +11,7 @@ import { BadRequestError } from '../errors';
 
 const create = asyncHandler(
   async (req: Request<Record<string, string>, unknown, CreateProductInput>, res: Response) => {
-    const files = req.files as { img?: Express.Multer.File[]; gallery?: Express.Multer.File[] };
+    const files = req.files as { img?: Express.Multer.File[]; 'gallery[]'?: Express.Multer.File[] };
 
     const imageFile = files.img?.[0];
 
@@ -19,7 +19,7 @@ const create = asyncHandler(
       throw new BadRequestError('Arquivo de imagem obrigatório.');
     }
 
-    const galleryFiles: Express.Multer.File[] = files.gallery ?? [];
+    const galleryFiles: Express.Multer.File[] = files['gallery[]'] ?? [];
 
     const product = await productService.create(req.body, imageFile, galleryFiles);
 
@@ -61,10 +61,10 @@ const findById = asyncHandler(async (req: Request<ProductIdParam>, res: Response
 
 const update = asyncHandler(
   async (req: Request<ProductIdParam, unknown, UpdateProductInput>, res: Response) => {
-    const files = req.files as { img?: Express.Multer.File[]; gallery?: Express.Multer.File[] };
+    const files = req.files as { img?: Express.Multer.File[]; 'gallery[]'?: Express.Multer.File[] };
 
     const imageFile: Express.Multer.File | undefined = files.img?.[0];
-    const galleryFiles: Express.Multer.File[] = files.gallery ?? [];
+    const galleryFiles: Express.Multer.File[] = files['gallery[]'] ?? [];
 
     const product = await productService.update(req.params.id, req.body, imageFile, galleryFiles);
 

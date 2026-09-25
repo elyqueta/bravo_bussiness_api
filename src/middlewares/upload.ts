@@ -28,6 +28,6 @@ export const upload = multer({
 export function uploadProductImages() {
   return upload.fields([
     { name: 'img', maxCount: 1 },
-    { name: 'gallery', maxCount: 20 },
+    { name: 'gallery[]', maxCount: 20 },
   ]);
 }

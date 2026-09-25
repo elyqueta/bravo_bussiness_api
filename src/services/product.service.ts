@@ -3,7 +3,7 @@ import { categoryService } from './category.service';
 import { CreateProductData, Product, ProductFilters } from '../types/product.types';
 import { CreateProductInput, UpdateProductInput } from '../validators/product.validator';
 import { NotFoundError, ConflictError } from '../errors';
-import { uploadImage } from '../utils/cloudinary';
+import { uploadImage, deleteImage } from '../utils/cloudinary';
 
 async function create(
   input: CreateProductInput,
@@ -23,11 +23,11 @@ async function create(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const productId = `BB-${category.prefix}${String(nextSeq).padStart(3, '0')}`;
 
-    const img = await uploadImage(imageFile);
+    const { url: img } = await uploadImage(imageFile);
 
     const gallery: string[] = [];
     for (const file of galleryFiles) {
-      const url = await uploadImage(file);
+      const { url } = await uploadImage(file);
       gallery.push(url);
     }
 
@@ -93,16 +93,21 @@ async function update(
     await categoryService.findBySlug(input.categorySlug);
   }
 
+  const existing = await productRepository.findById(id);
+  if (!existing) {
+    throw new NotFoundError(`Produto com id "${id}" não encontrado.`);
+  }
+
   const updateData: UpdateProductInput = { ...input };
 
   if (imageFile) {
-    (updateData as UpdateProductInput & { img: string }).img = await uploadImage(imageFile);
+    (updateData as UpdateProductInput & { img: string }).img = (await uploadImage(imageFile)).url;
   }
 
   if (galleryFiles && galleryFiles.length > 0) {
     const gallery: string[] = [];
     for (const file of galleryFiles) {
-      const url = await uploadImage(file);
+      const { url } = await uploadImage(file);
       gallery.push(url);
     }
     (updateData as UpdateProductInput & { gallery: string[] }).gallery = gallery;
@@ -114,15 +119,32 @@ async function update(
     throw new NotFoundError(`Produto com id "${id}" não encontrado.`);
   }
 
+  if (imageFile && existing.img) {
+    await deleteImage(existing.img);
+  }
+
+  if (galleryFiles && galleryFiles.length > 0 && existing.gallery.length > 0) {
+    await Promise.all(existing.gallery.map((url) => deleteImage(url)));
+  }
+
   return updated;
 }
 
 async function remove(id: string): Promise<void> {
+  const existing = await productRepository.findById(id);
+
+  if (!existing) {
+    throw new NotFoundError(`Produto com id "${id}" não encontrado.`);
+  }
+
   const deleted = await productRepository.remove(id);
 
   if (!deleted) {
     throw new NotFoundError(`Produto com id "${id}" não encontrado.`);
   }
+
+  const imagesToDelete = [existing.img, ...existing.gallery].filter(Boolean);
+  await Promise.all(imagesToDelete.map((url) => deleteImage(url)));
 }
 
 export const productService = {
