@@ -67,11 +67,11 @@ app.get('/health', (0, asyncHandler_1.asyncHandler)(async (_req, res) => {
         });
     }
 }));
-app.use('/api/auth', auth_routes_1.default);
-app.use('/api/categories', category_routes_1.default);
-app.use('/api/products', product_routes_1.default);
-app.use('/api/admin', admin_routes_1.default);
-app.use('/api/seed', seed_routes_1.default);
+app.use('/api/v1/auth', auth_routes_1.default);
+app.use('/api/v1/categories', category_routes_1.default);
+app.use('/api/v1/products', product_routes_1.default);
+app.use('/api/v1/admin', admin_routes_1.default);
+app.use('/api/v1/seed', seed_routes_1.default);
 app.use(notFoundHandler_1.notFoundHandler);
 app.use(errorHandler_1.errorHandler);
 exports.default = app;

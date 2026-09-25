@@ -63,8 +63,8 @@ const swaggerDefinition = {
                     categorySlug: { type: 'string', example: 'roupas' },
                     name: { type: 'string', example: 'Camiseta Básica' },
                     description: { type: 'string', nullable: true },
-                    price: { type: 'integer', example: 14500 },
-                    oldPrice: { type: 'integer', nullable: true, example: 18000 },
+                    price: { type: 'number', format: 'decimal', example: 14500.00 },
+                    oldPrice: { type: 'number', format: 'decimal', nullable: true, example: 18000.00 },
                     img: { type: 'string', example: 'https://cdn.exemplo.co.ao/produtos/abc.jpg' },
                     badge: { type: 'string', nullable: true, enum: ['Sale', 'Premium', 'Novo'] },
                     features: { type: 'array', items: { type: 'string' }, example: ['100% algodão', 'Manga curta'] },
@@ -140,6 +140,8 @@ const swaggerDefinition = {
                 properties: {
                     user: { $ref: '#/components/schemas/User' },
                     accessToken: { type: 'string', example: 'eyJhbGciOi...' },
+                    refreshToken: { type: 'string', example: 'a1b2c3...' },
+                    refreshExpiresAt: { type: 'string', format: 'date-time', example: '2026-09-25T10:00:00.000Z' },
                 },
             },
             Pagination: {

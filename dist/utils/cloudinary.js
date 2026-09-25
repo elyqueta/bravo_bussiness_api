@@ -4,10 +4,11 @@ exports.cloudinary = void 0;
 exports.uploadImage = uploadImage;
 const cloudinary_1 = require("cloudinary");
 Object.defineProperty(exports, "cloudinary", { enumerable: true, get: function () { return cloudinary_1.v2; } });
+const env_1 = require("../config/env");
 cloudinary_1.v2.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: env_1.env.CLOUDINARY_CLOUD_NAME,
+    api_key: env_1.env.CLOUDINARY_API_KEY,
+    api_secret: env_1.env.CLOUDINARY_API_SECRET,
 });
 async function uploadImage(file) {
     const buffer = file.buffer;

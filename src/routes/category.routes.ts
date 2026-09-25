@@ -20,7 +20,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/categories:
+ * /api/v1/categories:
  *   post:
  *     tags: [Categories]
  *     summary: Cria uma nova categoria (admin)
@@ -71,7 +71,7 @@ router.post(
 
 /**
  * @openapi
- * /api/categories:
+ * /api/v1/categories:
  *   get:
  *     tags: [Categories]
  *     summary: Lista todas as categorias, ordenadas por label
@@ -93,7 +93,7 @@ router.get('/', categoryController.findAll);
 
 /**
  * @openapi
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *   get:
  *     tags: [Categories]
  *     summary: Busca uma categoria pelo id
@@ -123,7 +123,7 @@ router.get('/:id', validate({ params: categoryIdParamSchema }), categoryControll
 
 /**
  * @openapi
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *   patch:
  *     tags: [Categories]
  *     summary: Atualiza parcialmente uma categoria (admin)
@@ -185,7 +185,7 @@ router.patch(
 
 /**
  * @openapi
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *   delete:
  *     tags: [Categories]
  *     summary: Remove uma categoria (admin)

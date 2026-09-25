@@ -12,7 +12,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/admin/me:
+ * /api/v1/admin/me:
  *   get:
  *     tags: [Admin]
  *     summary: Devolve os dados do administrador autenticado

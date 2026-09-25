@@ -48,7 +48,7 @@ O projeto tem duas fontes de schema — usar **as duas**, pela ordem certa, apon
 
 2. (Opcional) Criar o admin inicial e seed de catálogo depois do deploy, via endpoint público já existente:
    ```
-   POST /api/seed/init
+    POST /api/v1/seed/init
    { "email": "...", "password": "...", "fullName": "..." }
    ```
    ou correr `npm run seed` localmente apontando `DATABASE_URL` para a Neon.
@@ -152,8 +152,8 @@ Definir no separador **Environment** do serviço:
    { "status": "ok", "service": "bravo-bussiness-api", "database": "connected", "timestamp": "..." }
    ```
 4. Se `database: "disconnected"` — confirmar `DATABASE_URL` (typo, `sslmode=require`, credenciais) e que o schema (secção 2) já foi aplicado na Neon.
-5. Testar um endpoint público sem auth, ex: `GET /api/categories`.
-6. Testar login/admin (se já tiver seed feito): `POST /api/auth/login`.
+5. Testar um endpoint público sem auth, ex: `GET /api/v1/categories`.
+6. Testar login/admin (se já tiver seed feito): `POST /api/v1/auth/login`.
 
 ---
 

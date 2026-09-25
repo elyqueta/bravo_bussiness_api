@@ -13,9 +13,9 @@ import { UnauthorizedError } from '../errors';
  * Onde este middleware deve ser usado?
  *
  * Em qualquer rota que precise saber "quem está a fazer esta
- * requisição" — ex: GET /api/cart (carrinho é sempre de um
- * utilizador específico), POST /api/orders. Rotas públicas como
- * GET /api/categories continuam sem este middleware.
+ * requisição" — ex: GET /api/v1/cart (carrinho é sempre de um
+ * utilizador específico), POST /api/v1/orders. Rotas públicas como
+ * GET /api/v1/categories continuam sem este middleware.
  *
  * Por que não distinguir "token ausente" de "token inválido" na
  * mensagem de erro?

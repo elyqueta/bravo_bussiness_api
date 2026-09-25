@@ -15,7 +15,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/auth/login:
+ * /api/v1/auth/login:
  *   post:
  *     tags: [Auth]
  *     summary: Autentica o administrador e devolve os tokens de acesso e refresh
@@ -61,7 +61,7 @@ router.post(
 
 /**
  * @openapi
- * /api/auth/refresh:
+ * /api/v1/auth/refresh:
  *   post:
  *     tags: [Auth]
  *     summary: Usa o refresh token para emitir um novo access token

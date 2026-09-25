@@ -15,7 +15,7 @@ const router = (0, express_1.Router)();
  */
 /**
  * @openapi
- * /api/categories:
+ * /api/v1/categories:
  *   post:
  *     tags: [Categories]
  *     summary: Cria uma nova categoria (admin)
@@ -59,7 +59,7 @@ const router = (0, express_1.Router)();
 router.post('/', authenticate_1.authenticate, requireAdmin_1.requireAdmin, (0, validate_1.validate)({ body: category_validator_1.createCategorySchema }), category_controller_1.categoryController.create);
 /**
  * @openapi
- * /api/categories:
+ * /api/v1/categories:
  *   get:
  *     tags: [Categories]
  *     summary: Lista todas as categorias, ordenadas por label
@@ -80,7 +80,7 @@ router.post('/', authenticate_1.authenticate, requireAdmin_1.requireAdmin, (0, v
 router.get('/', category_controller_1.categoryController.findAll);
 /**
  * @openapi
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *   get:
  *     tags: [Categories]
  *     summary: Busca uma categoria pelo id
@@ -109,7 +109,7 @@ router.get('/', category_controller_1.categoryController.findAll);
 router.get('/:id', (0, validate_1.validate)({ params: category_validator_1.categoryIdParamSchema }), category_controller_1.categoryController.findById);
 /**
  * @openapi
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *   patch:
  *     tags: [Categories]
  *     summary: Atualiza parcialmente uma categoria (admin)
@@ -164,7 +164,7 @@ router.get('/:id', (0, validate_1.validate)({ params: category_validator_1.categ
 router.patch('/:id', authenticate_1.authenticate, requireAdmin_1.requireAdmin, (0, validate_1.validate)({ params: category_validator_1.categoryIdParamSchema, body: category_validator_1.updateCategorySchema }), category_controller_1.categoryController.update);
 /**
  * @openapi
- * /api/categories/{id}:
+ * /api/v1/categories/{id}:
  *   delete:
  *     tags: [Categories]
  *     summary: Remove uma categoria (admin)

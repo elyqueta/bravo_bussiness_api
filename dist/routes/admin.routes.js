@@ -11,7 +11,7 @@ const router = (0, express_1.Router)();
  */
 /**
  * @openapi
- * /api/admin/me:
+ * /api/v1/admin/me:
  *   get:
  *     tags: [Admin]
  *     summary: Devolve os dados do administrador autenticado

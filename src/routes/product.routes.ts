@@ -22,7 +22,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/products:
+ * /api/v1/products:
  *   post:
  *     tags: [Products]
  *     summary: Cria um novo produto (admin)
@@ -102,7 +102,7 @@ router.post(
 
 /**
  * @openapi
- * /api/products:
+ * /api/v1/products:
  *   get:
  *     tags: [Products]
  *     summary: Lista produtos com filtros e paginação
@@ -151,7 +151,7 @@ router.get('/', validate({ query: listProductsQuerySchema }), productController.
 
 /**
  * @openapi
- * /api/products/{id}:
+ * /api/v1/products/{id}:
  *   get:
  *     tags: [Products]
  *     summary: Busca um produto pelo id
@@ -187,7 +187,7 @@ router.get('/:id', validate({ params: productIdParamSchema }), productController
 
 /**
  * @openapi
- * /api/products/{id}:
+ * /api/v1/products/{id}:
  *   patch:
  *     tags: [Products]
  *     summary: Atualiza parcialmente um produto (admin)
@@ -272,7 +272,7 @@ router.patch(
 
 /**
  * @openapi
- * /api/products/{id}:
+ * /api/v1/products/{id}:
  *   delete:
  *     tags: [Products]
  *     summary: Remove um produto (admin)

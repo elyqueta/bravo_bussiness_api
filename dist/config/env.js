@@ -1,9 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.env = void 0;
 const zod_1 = require("zod");
+const dotenv_1 = __importDefault(require("dotenv"));
 if (process.env.NODE_ENV !== 'production') {
-    void import('dotenv/config');
+    dotenv_1.default.config();
 }
 const envSchema = zod_1.z.object({
     NODE_ENV: zod_1.z.enum(['development', 'production', 'test']).default('development'),
@@ -29,6 +33,11 @@ const envSchema = zod_1.z.object({
         .string({ error: 'JWT_SECRET é obrigatória' })
         .min(32, 'JWT_SECRET deve ter no mínimo 32 caracteres.'),
     JWT_ACCESS_EXPIRES_IN: zod_1.z.string().default('15m'),
+    JWT_REFRESH_EXPIRES_IN: zod_1.z.coerce
+        .number({ error: 'JWT_REFRESH_EXPIRES_IN deve ser um número' })
+        .int()
+        .positive()
+        .default(7 * 24 * 60 * 60 * 1000),
     BCRYPT_SALT_ROUNDS: zod_1.z.coerce
         .number({ error: 'BCRYPT_SALT_ROUNDS deve ser um número' })
         .int()

@@ -38,7 +38,7 @@ const createInitialAdmin = (0, asyncHandler_1.asyncHandler)(async (req, res) => 
 const router = (0, express_1.Router)();
 /**
  * @openapi
- * /api/seed/init:
+ * /api/v1/seed/init:
  *   post:
  *     tags: [Seed]
  *     summary: Cria o admin inicial (rota pública para setup)

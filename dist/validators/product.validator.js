@@ -15,12 +15,10 @@ const badgeSchema = zod_1.z.enum(['Sale', 'Premium', 'Novo']);
 const priceSchema = zod_1.z
     .coerce
     .number({ error: 'price é obrigatório e deve ser um número.' })
-    .int('price deve ser um número inteiro (Kz).')
     .positive('price deve ser maior que zero.');
 const oldPriceSchema = zod_1.z
     .coerce
     .number({ error: 'oldPrice deve ser um número.' })
-    .int('oldPrice deve ser um número inteiro (Kz).')
     .positive('oldPrice deve ser maior que zero.');
 const categorySlugSchema = zod_1.z.string().trim().min(1, 'categorySlug é obrigatório.');
 const featuresSchema = zod_1.z.array(zod_1.z.string().trim()).max(50, 'features deve ter no máximo 50 itens.');
@@ -45,7 +43,6 @@ exports.createProductSchema = zod_1.z
     badge: badgeSchema.optional(),
     features: featuresSchema.optional(),
 })
-    .strict()
     .superRefine(validatePriceConsistency);
 exports.updateProductSchema = zod_1.z
     .object({
@@ -57,7 +54,6 @@ exports.updateProductSchema = zod_1.z
     badge: badgeSchema.nullable().optional(),
     features: featuresSchema.nullable().optional(),
 })
-    .strict()
     .refine((data) => Object.keys(data).length > 0, {
     message: 'Pelo menos um campo deve ser enviado para atualização.',
 })

@@ -11,7 +11,7 @@ import { ForbiddenError } from '../errors';
  * para isto?" — já assume que req.user existe, e só decide se o
  * TIPO de conta autenticada pode prosseguir. Separar os dois permite
  * reutilizar `authenticate` sozinho em rotas onde "estar logado" já
- * basta (ex.: GET /api/companies), e empilhar `requireAdmin` só onde
+ * basta (ex.: GET /api/v1/companies), e empilhar `requireAdmin` só onde
  * for preciso mais do que isso.
  *
  * Por que isto SEMPRE precisa vir DEPOIS de `authenticate` na cadeia

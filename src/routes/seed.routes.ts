@@ -45,7 +45,7 @@ const router = Router();
 
 /**
  * @openapi
- * /api/seed/init:
+ * /api/v1/seed/init:
  *   post:
  *     tags: [Seed]
  *     summary: Cria o admin inicial (rota pública para setup)
