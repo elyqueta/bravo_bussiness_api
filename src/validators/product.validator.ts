@@ -25,7 +25,30 @@ const oldPriceSchema = z
 
 const categorySlugSchema = z.string().trim().min(1, 'categorySlug é obrigatório.');
 
-const featuresSchema = z.array(z.string().trim()).max(50, 'features deve ter no máximo 50 itens.');
+const featuresSchema = z
+  .union([
+    z.array(z.string().trim()),
+    z.string().trim(),
+    z.null(),
+  ])
+  .transform((val) => {
+    if (val === null) {
+      return null;
+    }
+
+    if (typeof val === 'string') {
+      return val === '' ? [] : val.split(',').map((item) => item.trim()).filter(Boolean);
+    }
+
+    return val;
+  })
+  .refine((val) => {
+    if (Array.isArray(val)) {
+      return val.length <= 50;
+    }
+
+    return true;
+  }, 'features deve ter no máximo 50 itens.');
 
 function validatePriceConsistency(
   data: { price: number; oldPrice?: number | null },
@@ -64,7 +87,7 @@ export const updateProductSchema = z
     price: priceSchema.optional(),
     oldPrice: oldPriceSchema.nullable().optional(),
     badge: badgeSchema.nullable().optional(),
-    features: featuresSchema.nullable().optional(),
+    features: featuresSchema.optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Pelo menos um campo deve ser enviado para atualização.',
