@@ -54,7 +54,6 @@ export const createProductSchema = z
     badge: badgeSchema.optional(),
     features: featuresSchema.optional(),
   })
-  .strict()
   .superRefine(validatePriceConsistency);
 
 export const updateProductSchema = z
@@ -67,7 +66,6 @@ export const updateProductSchema = z
     badge: badgeSchema.nullable().optional(),
     features: featuresSchema.nullable().optional(),
   })
-  .strict()
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Pelo menos um campo deve ser enviado para atualização.',
   })
