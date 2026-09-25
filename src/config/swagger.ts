@@ -136,6 +136,8 @@ const swaggerDefinition: swaggerJsdoc.OAS3Definition = {
         properties: {
           user: { $ref: '#/components/schemas/User' },
           accessToken: { type: 'string', example: 'eyJhbGciOi...' },
+          refreshToken: { type: 'string', example: 'a1b2c3...' },
+          refreshExpiresAt: { type: 'string', format: 'date-time', example: '2026-09-25T10:00:00.000Z' },
         },
       },
       Pagination: {

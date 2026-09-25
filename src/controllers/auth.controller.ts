@@ -5,7 +5,7 @@ import { LoginInput } from '../validators/auth.validator';
 
 const login = asyncHandler(
   async (req: Request<Record<string, string>, unknown, LoginInput>, res: Response) => {
-    const result = await authService.login(req.body);
+    const result = await authService.login(req.body, req.ip);
 
     res.status(200).json({
       status: 'success',
@@ -14,6 +14,18 @@ const login = asyncHandler(
   }
 );
 
+const refresh = asyncHandler(async (req: Request, res: Response) => {
+  const { refreshToken } = req.body as { refreshToken: string };
+
+  const result = await authService.refresh(refreshToken);
+
+  res.status(200).json({
+    status: 'success',
+    data: result,
+  });
+});
+
 export const authController = {
   login,
+  refresh,
 };

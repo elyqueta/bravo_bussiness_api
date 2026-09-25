@@ -37,6 +37,12 @@ const envSchema = z.object({
 
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
 
+  JWT_REFRESH_EXPIRES_IN: z.coerce
+    .number({ error: 'JWT_REFRESH_EXPIRES_IN deve ser um número' })
+    .int()
+    .positive()
+    .default(7 * 24 * 60 * 60 * 1000),
+
   BCRYPT_SALT_ROUNDS: z.coerce
     .number({ error: 'BCRYPT_SALT_ROUNDS deve ser um número' })
     .int()
