@@ -2,7 +2,7 @@ import { productRepository } from '../repositories/product.repository';
 import { categoryService } from './category.service';
 import { CreateProductData, Product, ProductFilters } from '../types/product.types';
 import { CreateProductInput, UpdateProductInput } from '../validators/product.validator';
-import { NotFoundError } from '../errors';
+import { NotFoundError, ConflictError } from '../errors';
 import { uploadImage } from '../utils/cloudinary';
 
 async function create(
@@ -17,31 +17,53 @@ async function create(
     { page: 1, limit: 1 }
   );
 
-  const nextSeq = countResult.total + 1;
-  const productId = `BB-${category.prefix}${String(nextSeq).padStart(3, '0')}`;
+  let nextSeq = countResult.total + 1;
+  const maxRetries = 10;
 
-  const img = await uploadImage(imageFile);
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const productId = `BB-${category.prefix}${String(nextSeq).padStart(3, '0')}`;
 
-  const gallery: string[] = [];
-  for (const file of galleryFiles) {
-    const url = await uploadImage(file);
-    gallery.push(url);
+    const img = await uploadImage(imageFile);
+
+    const gallery: string[] = [];
+    for (const file of galleryFiles) {
+      const url = await uploadImage(file);
+      gallery.push(url);
+    }
+
+    const data: CreateProductData = {
+      id: productId,
+      categorySlug: category.slug,
+      name: input.name,
+      description: input.description ?? null,
+      price: input.price,
+      oldPrice: input.oldPrice ?? null,
+      img,
+      badge: input.badge ?? null,
+      features: input.features ?? [],
+      gallery,
+    };
+
+    try {
+      return await productRepository.create(data);
+    } catch (err) {
+      const isUniqueViolation =
+        typeof err === 'object' &&
+        err !== null &&
+        'code' in err &&
+        (err as { code?: string }).code === '23505';
+
+      if (!isUniqueViolation) {
+        throw err;
+      }
+
+      nextSeq += 1;
+    }
   }
 
-  const data: CreateProductData = {
-    id: productId,
-    categorySlug: category.slug,
-    name: input.name,
-    description: input.description ?? null,
-    price: input.price,
-    oldPrice: input.oldPrice ?? null,
-    img,
-    badge: input.badge ?? null,
-    features: input.features ?? [],
-    gallery,
-  };
-
-  return productRepository.create(data);
+  throw new ConflictError(
+    'Não foi possível gerar um código de produto único após várias tentativas.'
+  );
 }
 
 async function findAll(
