@@ -21,7 +21,31 @@ const oldPriceSchema = zod_1.z
     .number({ error: 'oldPrice deve ser um número.' })
     .positive('oldPrice deve ser maior que zero.');
 const categorySlugSchema = zod_1.z.string().trim().min(1, 'categorySlug é obrigatório.');
-const featuresSchema = zod_1.z.array(zod_1.z.string().trim()).max(50, 'features deve ter no máximo 50 itens.');
+const featuresSchema = zod_1.z
+    .union([
+    zod_1.z.array(zod_1.z.string().trim()),
+    zod_1.z.string().trim(),
+    zod_1.z.null(),
+])
+    .transform((val) => {
+    if (val === null) {
+        return null;
+    }
+    if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (trimmed === '' || trimmed === '[]') {
+            return [];
+        }
+        return trimmed.split(',').map((item) => item.trim()).filter(Boolean);
+    }
+    return val;
+})
+    .refine((val) => {
+    if (Array.isArray(val)) {
+        return val.length <= 50;
+    }
+    return true;
+}, 'features deve ter no máximo 50 itens.');
 function validatePriceConsistency(data, ctx) {
     if (data.oldPrice !== undefined &&
         data.oldPrice !== null &&
@@ -52,7 +76,7 @@ exports.updateProductSchema = zod_1.z
     price: priceSchema.optional(),
     oldPrice: oldPriceSchema.nullable().optional(),
     badge: badgeSchema.nullable().optional(),
-    features: featuresSchema.nullable().optional(),
+    features: featuresSchema.optional(),
 })
     .refine((data) => Object.keys(data).length > 0, {
     message: 'Pelo menos um campo deve ser enviado para atualização.',

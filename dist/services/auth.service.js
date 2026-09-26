@@ -42,18 +42,26 @@ async function issueTokens(user, device, ip) {
         refreshExpiresAt,
     };
 }
+function isAccountLocked(user) {
+    return user.lockedUntil !== null && user.lockedUntil > new Date();
+}
 async function login(input, device, ip) {
     const userWithHash = await user_repository_1.userRepository.findByEmail(input.email);
     if (!userWithHash) {
         throw new errors_1.UnauthorizedError('Credenciais inválidas.');
     }
-    const isPasswordValid = await (0, password_util_1.comparePassword)(input.password, userWithHash.passwordHash);
-    if (!isPasswordValid) {
-        throw new errors_1.UnauthorizedError('Credenciais inválidas.');
-    }
     if (userWithHash.status !== 'active') {
         throw new errors_1.UnauthorizedError('Esta conta não está ativa. Contacte o suporte.');
     }
+    if (isAccountLocked(userWithHash)) {
+        throw new errors_1.UnauthorizedError('Conta temporariamente bloqueada. Tente novamente mais tarde.');
+    }
+    const isPasswordValid = await (0, password_util_1.comparePassword)(input.password, userWithHash.passwordHash);
+    if (!isPasswordValid) {
+        await user_repository_1.userRepository.incrementFailedAttempts(userWithHash.id);
+        throw new errors_1.UnauthorizedError('Credenciais inválidas.');
+    }
+    await user_repository_1.userRepository.resetFailedAttempts(userWithHash.id);
     const user = toSafeUser(userWithHash);
     return issueTokens(user, device, ip);
 }

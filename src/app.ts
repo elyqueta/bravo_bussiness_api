@@ -1,5 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { pool } from './database/pool';
 import { env } from './config/env';
 import { corsOptions } from './config/cors';
@@ -16,11 +18,18 @@ import seedRoutes from './routes/seed.routes';
 const app: Application = express();
 
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 
 app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 if (env.NODE_ENV !== 'production') {
   app.get('/openapi.json', (_req: Request, res: Response) => {

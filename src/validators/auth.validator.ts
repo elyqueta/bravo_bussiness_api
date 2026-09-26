@@ -11,8 +11,9 @@ const passwordSchema = z
   .min(1, 'password não pode ser vazia.');
 
 const refreshTokenSchema = z
-  .string({ error: 'refreshToken é obrigatório.' })
-  .min(1, 'refreshToken não pode ser vazio.');
+  .string({ error: 'refreshToken é obrigatório quando enviado no corpo.' })
+  .min(1, 'refreshToken não pode ser vazio.')
+  .optional();
 
 export const loginSchema = z.object({
   email: emailSchema,

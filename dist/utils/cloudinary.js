@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cloudinary = void 0;
 exports.uploadImage = uploadImage;
+exports.deleteImage = deleteImage;
 const cloudinary_1 = require("cloudinary");
 Object.defineProperty(exports, "cloudinary", { enumerable: true, get: function () { return cloudinary_1.v2; } });
 const env_1 = require("../config/env");
@@ -27,13 +28,28 @@ async function uploadImage(file) {
                 reject(new Error(`Falha ao enviar imagem para o Cloudinary: ${error.message}`));
                 return;
             }
-            if (!result?.secure_url) {
-                reject(new Error('Cloudinary retornou uma resposta sem URL.'));
+            if (!result?.secure_url || !result?.public_id) {
+                reject(new Error('Cloudinary retornou uma resposta sem URL ou public_id.'));
                 return;
             }
-            resolve(result.secure_url);
+            resolve({ url: result.secure_url, publicId: result.public_id });
         })
             .end(buffer);
     });
+}
+async function deleteImage(url) {
+    const publicId = getPublicIdFromUrl(url);
+    try {
+        await cloudinary_1.v2.uploader.destroy(publicId);
+    }
+    catch (error) {
+        console.error(`Falha ao eliminar imagem do Cloudinary (${publicId}):`, error);
+    }
+}
+function getPublicIdFromUrl(url) {
+    const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/);
+    if (!match || !match[1])
+        return url;
+    return match[1];
 }
 //# sourceMappingURL=cloudinary.js.map

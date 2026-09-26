@@ -10,7 +10,7 @@ const create = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     if (!imageFile) {
         throw new errors_1.BadRequestError('Arquivo de imagem obrigatório.');
     }
-    const galleryFiles = files.gallery ?? [];
+    const galleryFiles = files['gallery[]'] ?? [];
     const product = await product_service_1.productService.create(req.body, imageFile, galleryFiles);
     res.status(201).json({
         status: 'success',
@@ -41,7 +41,7 @@ const findById = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
 const update = (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const files = req.files;
     const imageFile = files.img?.[0];
-    const galleryFiles = files.gallery ?? [];
+    const galleryFiles = files['gallery[]'] ?? [];
     const product = await product_service_1.productService.update(req.params.id, req.body, imageFile, galleryFiles);
     res.status(200).json({
         status: 'success',

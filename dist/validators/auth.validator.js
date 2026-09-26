@@ -11,8 +11,9 @@ const passwordSchema = zod_1.z
     .string({ error: 'password é obrigatória e deve ser texto.' })
     .min(1, 'password não pode ser vazia.');
 const refreshTokenSchema = zod_1.z
-    .string({ error: 'refreshToken é obrigatório.' })
-    .min(1, 'refreshToken não pode ser vazio.');
+    .string({ error: 'refreshToken é obrigatório quando enviado no corpo.' })
+    .min(1, 'refreshToken não pode ser vazio.')
+    .optional();
 exports.loginSchema = zod_1.z.object({
     email: emailSchema,
     password: passwordSchema,

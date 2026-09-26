@@ -59,13 +59,11 @@ router.post('/login', authLimiter_1.authLimiter, (0, validate_1.validate)({ body
  *     tags: [Auth]
  *     summary: Usa o refresh token para emitir um novo access token
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - refreshToken
  *             properties:
  *               refreshToken:
  *                 type: string
@@ -95,6 +93,19 @@ router.post('/login', authLimiter_1.authLimiter, (0, validate_1.validate)({ body
  */
 router.post('/refresh', (0, validate_1.validate)({ body: auth_validator_1.refreshSchema }), ((req, res, next) => {
     void auth_controller_1.authController.refresh(req, res, next);
+}));
+/**
+ * @openapi
+ * /api/v1/auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Encerra a sessão atual e limpa o cookie de refresh token
+ *     responses:
+ *       204:
+ *         description: Logout efetuado com sucesso.
+ */
+router.post('/logout', ((req, res, next) => {
+    void auth_controller_1.authController.logout(req, res, next);
 }));
 exports.default = router;
 //# sourceMappingURL=auth.routes.js.map

@@ -38,6 +38,7 @@ const envSchema = zod_1.z.object({
         .int()
         .positive()
         .default(7 * 24 * 60 * 60 * 1000),
+    COOKIE_DOMAIN: zod_1.z.string().optional(),
     BCRYPT_SALT_ROUNDS: zod_1.z.coerce
         .number({ error: 'BCRYPT_SALT_ROUNDS deve ser um número' })
         .int()

@@ -24,7 +24,11 @@ function toSafeUser(user: UserWithPasswordHash): User {
   };
 }
 
-async function issueTokens(user: User, device?: string | null, ip?: string | null) {
+async function issueTokens(
+  user: User,
+  device?: string | null,
+  ip?: string | null
+): Promise<{ user: User; accessToken: string; refreshToken: string; refreshExpiresAt: Date }> {
   const accessToken = generateAccessToken({
     sub: user.id,
     email: user.email,
@@ -51,6 +55,10 @@ async function issueTokens(user: User, device?: string | null, ip?: string | nul
   };
 }
 
+function isAccountLocked(user: UserWithPasswordHash): boolean {
+  return user.lockedUntil != null && user.lockedUntil > new Date();
+}
+
 async function login(
   input: LoginInput,
   device?: string | null,
@@ -62,14 +70,29 @@ async function login(
     throw new UnauthorizedError('Credenciais inválidas.');
   }
 
+  if (userWithHash.status !== 'active') {
+    throw new UnauthorizedError('Esta conta não está ativa. Contacte o suporte.');
+  }
+
+  if (isAccountLocked(userWithHash)) {
+    throw new UnauthorizedError('Conta temporariamente bloqueada. Tente novamente mais tarde.');
+  }
+
   const isPasswordValid = await comparePassword(input.password, userWithHash.passwordHash);
 
   if (!isPasswordValid) {
+    try {
+      await userRepository.incrementFailedAttempts(userWithHash.id);
+    } catch {
+      // lockout ainda não disponível enquanto a migration não for aplicada
+    }
     throw new UnauthorizedError('Credenciais inválidas.');
   }
 
-  if (userWithHash.status !== 'active') {
-    throw new UnauthorizedError('Esta conta não está ativa. Contacte o suporte.');
+  try {
+    await userRepository.resetFailedAttempts(userWithHash.id);
+  } catch {
+    // lockout ainda não disponível enquanto a migration não for aplicada
   }
 
   const user = toSafeUser(userWithHash);

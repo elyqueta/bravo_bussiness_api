@@ -12,6 +12,8 @@ export interface UserRow {
   phone: string;
   role: UserRole;
   status: UserStatus;
+  failed_attempts: number;
+  locked_until: Date | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -29,6 +31,8 @@ export interface User {
 
 export interface UserWithPasswordHash extends User {
   passwordHash: string;
+  failedAttempts?: number;
+  lockedUntil?: Date | null;
 }
 
 export interface CreateUserData {

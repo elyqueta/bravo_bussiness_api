@@ -25,6 +25,8 @@ function toUserWithPasswordHash(row: UserRow): UserWithPasswordHash {
   return {
     ...toUser(row),
     passwordHash: row.password_hash,
+    failedAttempts: row.failed_attempts,
+    lockedUntil: row.locked_until,
   };
 }
 
@@ -79,8 +81,33 @@ async function findById(id: string): Promise<User | null> {
   return row ? toUser(row) : null;
 }
 
+async function incrementFailedAttempts(id: string): Promise<void> {
+  await query(
+    `UPDATE users
+     SET failed_attempts = failed_attempts + 1,
+         locked_until = CASE
+           WHEN failed_attempts + 1 >= 3 THEN NOW() + INTERVAL '30 minutes'
+           ELSE locked_until
+         END
+     WHERE id = $1`,
+    [id]
+  );
+}
+
+async function resetFailedAttempts(id: string): Promise<void> {
+  await query(
+    `UPDATE users
+     SET failed_attempts = 0,
+         locked_until = NULL
+     WHERE id = $1`,
+    [id]
+  );
+}
+
 export const userRepository = {
   create,
   findByEmail,
   findById,
+  incrementFailedAttempts,
+  resetFailedAttempts,
 };

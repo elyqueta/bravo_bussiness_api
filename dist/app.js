@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const helmet_1 = __importDefault(require("helmet"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const pool_1 = require("./database/pool");
 const env_1 = require("./config/env");
 const cors_2 = require("./config/cors");
@@ -19,9 +21,15 @@ const admin_routes_1 = __importDefault(require("./routes/admin.routes"));
 const seed_routes_1 = __importDefault(require("./routes/seed.routes"));
 const app = (0, express_1.default)();
 app.set('trust proxy', 1);
+app.disable('x-powered-by');
+app.use((0, helmet_1.default)({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
 app.use((0, cors_1.default)(cors_2.corsOptions));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use((0, cookie_parser_1.default)());
 if (env_1.env.NODE_ENV !== 'production') {
     app.get('/openapi.json', (_req, res) => {
         res.json(swagger_1.swaggerSpec);

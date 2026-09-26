@@ -4,12 +4,18 @@ import { CreateProductData, Product, ProductFilters } from '../types/product.typ
 import { CreateProductInput, UpdateProductInput } from '../validators/product.validator';
 import { NotFoundError, ConflictError } from '../errors';
 import { uploadImage, deleteImage } from '../utils/cloudinary';
+import { validateImageMagicBytes } from '../middlewares/upload';
 
 async function create(
   input: CreateProductInput,
   imageFile: Express.Multer.File,
   galleryFiles: Express.Multer.File[] = []
 ): Promise<Product> {
+  await validateImageMagicBytes(imageFile);
+  for (const file of galleryFiles) {
+    await validateImageMagicBytes(file);
+  }
+
   const category = await categoryService.findBySlug(input.categorySlug);
 
   const countResult = await productRepository.findAll(
@@ -101,10 +107,15 @@ async function update(
   const updateData: UpdateProductInput = { ...input };
 
   if (imageFile) {
+    await validateImageMagicBytes(imageFile);
     (updateData as UpdateProductInput & { img: string }).img = (await uploadImage(imageFile)).url;
   }
 
   if (galleryFiles && galleryFiles.length > 0) {
+    for (const file of galleryFiles) {
+      await validateImageMagicBytes(file);
+    }
+
     const gallery: string[] = [];
     for (const file of galleryFiles) {
       const { url } = await uploadImage(file);

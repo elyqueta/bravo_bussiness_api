@@ -66,13 +66,11 @@ router.post(
  *     tags: [Auth]
  *     summary: Usa o refresh token para emitir um novo access token
  *     requestBody:
- *       required: true
+ *       required: false
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - refreshToken
  *             properties:
  *               refreshToken:
  *                 type: string
@@ -105,6 +103,23 @@ router.post(
   validate({ body: refreshSchema }) as RequestHandler,
   ((req, res, next) => {
     void authController.refresh(req, res, next);
+  }) as RequestHandler
+);
+
+/**
+ * @openapi
+ * /api/v1/auth/logout:
+ *   post:
+ *     tags: [Auth]
+ *     summary: Encerra a sessão atual e limpa o cookie de refresh token
+ *     responses:
+ *       204:
+ *         description: Logout efetuado com sucesso.
+ */
+router.post(
+  '/logout',
+  ((req, res, next) => {
+    void authController.logout(req, res, next);
   }) as RequestHandler
 );
 
