@@ -11,6 +11,7 @@ export interface Session {
 }
 
 export interface CreateSessionData {
+  id?: string;
   userId: string;
   tokenHash: string;
   device?: string | null;
@@ -46,6 +47,23 @@ function toSession(row: {
 }
 
 async function create(data: CreateSessionData): Promise<Session> {
+  const hasId = data.id !== undefined;
+  const columns = ['user_id', 'token_hash', 'device', 'ip', 'expires_at'];
+  const values: unknown[] = [
+    data.userId,
+    data.tokenHash,
+    data.device ?? null,
+    data.ip ?? null,
+    data.expiresAt,
+  ];
+
+  if (hasId) {
+    columns.unshift('id');
+    values.unshift(data.id);
+  }
+
+  const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
+
   const result = await query<{
     id: string;
     user_id: string;
@@ -55,10 +73,10 @@ async function create(data: CreateSessionData): Promise<Session> {
     expires_at: Date;
     created_at: Date;
   }>(
-    `INSERT INTO sessions (user_id, token_hash, device, ip, expires_at)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO sessions (${columns.join(', ')})
+     VALUES (${placeholders})
      RETURNING id, user_id, token_hash, device, ip, expires_at, created_at`,
-    [data.userId, data.tokenHash, data.device ?? null, data.ip ?? null, data.expiresAt]
+    values
   );
 
   const row = result.rows[0];

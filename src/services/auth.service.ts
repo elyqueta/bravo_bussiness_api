@@ -7,9 +7,12 @@ import {
   generateAccessToken,
   generateRefreshToken,
   hashToken,
+  verifyRefreshToken,
 } from '../utils/token.util';
 import { UnauthorizedError } from '../errors';
 import { env } from '../config/env';
+import jwt from 'jsonwebtoken';
+import crypto from 'node:crypto';
 
 function toSafeUser(user: UserWithPasswordHash): User {
   return {
@@ -35,11 +38,14 @@ async function issueTokens(
     role: user.role,
   });
 
-  const refreshToken = generateRefreshToken();
   const refreshTokenExpiresIn = env.JWT_REFRESH_EXPIRES_IN;
   const refreshExpiresAt = new Date(Date.now() + refreshTokenExpiresIn);
 
+  const sessionId = crypto.randomUUID();
+  const refreshToken = generateRefreshToken(sessionId, user.id);
+
   await sessionRepository.create({
+    id: sessionId,
     userId: user.id,
     tokenHash: hashToken(refreshToken),
     device: device ?? null,
@@ -103,17 +109,34 @@ async function login(
 async function refresh(
   refreshToken: string
 ): Promise<{ user: User; accessToken: string; refreshToken: string; refreshExpiresAt: Date }> {
-  const tokenHash = hashToken(refreshToken);
+  let payload: { sessionId: string; userId: string };
+  try {
+    payload = verifyRefreshToken(refreshToken);
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      throw new UnauthorizedError('Refresh token expirado.');
+    }
+    throw new UnauthorizedError('Refresh token inválido ou expirado.');
+  }
 
+  const tokenHash = hashToken(refreshToken);
   const session = await sessionRepository.findByTokenHash(tokenHash);
 
   if (!session) {
-    throw new UnauthorizedError('Refresh token inválido ou expirado.');
+    await sessionRepository.removeAllByUserId(payload.userId);
+    throw new UnauthorizedError(
+      'Refresh token já utilizado. Todas as sessões foram revogadas por segurança.'
+    );
   }
 
   if (session.expiresAt < new Date()) {
     await sessionRepository.remove(session.id);
     throw new UnauthorizedError('Refresh token expirado.');
+  }
+
+  if (session.userId !== payload.userId) {
+    await sessionRepository.removeAllByUserId(payload.userId);
+    throw new UnauthorizedError('Sessão inválida.');
   }
 
   const user = await userRepository.findById(session.userId);

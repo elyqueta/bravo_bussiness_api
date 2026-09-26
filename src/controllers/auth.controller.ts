@@ -28,7 +28,6 @@ const login = asyncHandler(
       data: {
         user: result.user,
         accessToken: result.accessToken,
-        refreshToken: result.refreshToken,
         refreshExpiresAt: result.refreshExpiresAt,
       },
     });
@@ -56,7 +55,6 @@ const refresh = asyncHandler(async (req: Request, res: Response) => {
     status: 'success',
     data: {
       accessToken: result.accessToken,
-      refreshToken: result.refreshToken,
       refreshExpiresAt: result.refreshExpiresAt,
     },
   });

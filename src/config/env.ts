@@ -63,6 +63,8 @@ const envSchema = z.object({
   CLOUDINARY_API_SECRET: z
     .string({ error: 'CLOUDINARY_API_SECRET é obrigatória' })
     .min(1, 'CLOUDINARY_API_SECRET não pode ser vazia'),
+
+  SETUP_TOKEN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -26,16 +26,14 @@ async function create(
   let nextSeq = countResult.total + 1;
   const maxRetries = 10;
 
+  const { url: img } = await uploadImage(imageFile);
+
+  const gallery = await Promise.all(
+    galleryFiles.map((file) => uploadImage(file))
+  ).then((results) => results.map((r) => r.url));
+
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     const productId = `BB-${category.prefix}${String(nextSeq).padStart(3, '0')}`;
-
-    const { url: img } = await uploadImage(imageFile);
-
-    const gallery: string[] = [];
-    for (const file of galleryFiles) {
-      const { url } = await uploadImage(file);
-      gallery.push(url);
-    }
 
     const data: CreateProductData = {
       id: productId,
@@ -116,11 +114,9 @@ async function update(
       await validateImageMagicBytes(file);
     }
 
-    const gallery: string[] = [];
-    for (const file of galleryFiles) {
-      const { url } = await uploadImage(file);
-      gallery.push(url);
-    }
+    const gallery = await Promise.all(
+      galleryFiles.map((file) => uploadImage(file))
+    ).then((results) => results.map((r) => r.url));
     (updateData as UpdateProductInput & { gallery: string[] }).gallery = gallery;
   }
 

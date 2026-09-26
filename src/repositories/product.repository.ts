@@ -84,18 +84,12 @@ async function findAll(
 ): Promise<{ data: Product[]; page: number; limit: number; total: number; totalPages: number }> {
   const { clause, values } = buildWhereClause(filters);
 
-  const countResult = await query<{ count: number }>(
-    `SELECT COUNT(*)::int AS count FROM product ${clause}`,
-    values
-  );
-  const total = countResult.rows[0]?.count ?? 0;
-
   const offset = (pagination.page - 1) * pagination.limit;
   const limitParamIndex = values.length + 1;
   const offsetParamIndex = values.length + 2;
 
-  const dataResult = await query<ProductRow>(
-    `SELECT ${LIST_COLUMNS}, category.label AS category_label
+  const result = await query<{ count: number } & ProductRow>(
+    `SELECT ${LIST_COLUMNS}, category.label AS category_label, COUNT(*) OVER() AS count
      FROM product
      INNER JOIN category ON category.slug = product.category_slug
      ${clause}
@@ -104,8 +98,10 @@ async function findAll(
     [...values, pagination.limit, offset]
   );
 
+  const total = result.rows[0]?.count ?? 0;
+
   return {
-    data: dataResult.rows.map(toProduct),
+    data: result.rows.map(toProduct),
     page: pagination.page,
     limit: pagination.limit,
     total,

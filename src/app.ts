@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import compression from 'compression';
 import { pool } from './database/pool';
 import { env } from './config/env';
 import { corsOptions } from './config/cors';
@@ -9,6 +10,7 @@ import { swaggerSpec } from './config/swagger';
 import { asyncHandler } from './middlewares/asyncHandler';
 import { notFoundHandler } from './middlewares/notFoundHandler';
 import { errorHandler } from './middlewares/errorHandler';
+import { apiLimiter } from './middlewares/rateLimiter';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
 import productRoutes from './routes/product.routes';
@@ -25,11 +27,15 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
+app.use(compression());
+
 app.use(cors(corsOptions));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
+
+app.use('/api', apiLimiter);
 
 if (env.NODE_ENV !== 'production') {
   app.get('/openapi.json', (_req: Request, res: Response) => {

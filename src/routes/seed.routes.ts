@@ -1,9 +1,10 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { asyncHandler } from '../middlewares/asyncHandler';
 import { hashPassword } from '../utils/password.util';
 import { userRepository } from '../repositories/user.repository';
-import { ConflictError } from '../errors';
+import { ConflictError, UnauthorizedError } from '../errors';
 import { z } from 'zod';
+import { env } from '../config/env';
 
 const createAdminSchema = z.object({
   email: z.email().trim().toLowerCase().max(255),
@@ -41,41 +42,15 @@ const createInitialAdmin = asyncHandler(async (req, res) => {
   });
 });
 
+const requireSetupToken = (req: Request, _res: Response, next: NextFunction): void => {
+  if (env.NODE_ENV === 'production' && req.get('x-setup-token') !== env.SETUP_TOKEN) {
+    return next(new UnauthorizedError('Token de setup inválido.'));
+  }
+  next();
+};
+
 const router = Router();
 
-/**
- * @openapi
- * /api/v1/seed/init:
- *   post:
- *     tags: [Seed]
- *     summary: Cria o admin inicial (rota pública para setup)
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - fullName
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *                 format: password
- *               fullName:
- *                 type: string
- *     responses:
- *       201:
- *         description: Admin criado com sucesso.
- *       409:
- *         description: Já existe um usuário com este email.
- *       422:
- *         description: Dados inválidos.
- */
-router.post('/seed/init', createInitialAdmin);
+router.post('/seed/init', requireSetupToken, createInitialAdmin);
 
 export default router;

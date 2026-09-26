@@ -38,6 +38,7 @@ export const updateCategorySchema = z
     prefix: prefixSchema.optional(),
     anchor: anchorSchema.optional(),
   })
+  .strict()
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Pelo menos um campo deve ser enviado para atualização.',
   });

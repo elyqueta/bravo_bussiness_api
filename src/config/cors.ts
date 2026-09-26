@@ -28,16 +28,14 @@ import { env } from './env';
  */
 export const corsOptions: CorsOptions = {
   origin(origin, callback) {
-    // Sem header Origin (curl, Postman, chamadas server-to-server,
-    // health checks) -> deixamos passar. CORS não se aplica a esses
-    // clientes; bloquear aqui não aumentaria segurança nenhuma,
-    // só atrapalharia ferramentas legítimas.
     if (!origin) {
       callback(null, true);
       return;
     }
 
-    if (env.CORS_ORIGIN.includes(origin)) {
+    const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim());
+
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
       return;
     }
