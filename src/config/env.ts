@@ -35,13 +35,13 @@ const envSchema = z.object({
     .string({ error: 'JWT_SECRET é obrigatória' })
     .min(32, 'JWT_SECRET deve ter no mínimo 32 caracteres.'),
 
-  JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
+  JWT_ACCESS_EXPIRES_IN: z.string().default('24h'),
 
   JWT_REFRESH_EXPIRES_IN: z.coerce
     .number({ error: 'JWT_REFRESH_EXPIRES_IN deve ser um número' })
     .int()
     .positive()
-    .default(7 * 24 * 60 * 60 * 1000),
+    .default(2 * 24 * 60 * 60 * 1000),
 
   COOKIE_DOMAIN: z.string().optional(),
 

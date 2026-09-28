@@ -34,7 +34,7 @@ export interface RefreshTokenPayload {
 
 export function generateRefreshToken(sessionId: string, userId: string): string {
   return jwt.sign({ sessionId, userId, type: 'refresh' }, env.JWT_SECRET, {
-    expiresIn: '7d',
+    expiresIn: env.JWT_REFRESH_EXPIRES_IN / 1000,
   });
 }
 

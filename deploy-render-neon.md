@@ -85,7 +85,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_ACCESS_EXPIRES_IN
-        value: 15m
+        value: 24h
       - key: BCRYPT_SALT_ROUNDS
         value: 12
       - key: CLOUDINARY_CLOUD_NAME
@@ -127,7 +127,7 @@ Definir no separador **Environment** do serviço:
 | `DATABASE_URL` | connection string da Neon (`...?sslmode=require`) |
 | `CORS_ORIGIN` | domínio(s) do frontend, separados por vírgula (ex: `https://teu-frontend.vercel.app`) |
 | `JWT_SECRET` | string aleatória com 32+ caracteres (podes deixar a Render gerar com `generateValue: true` no blueprint, ou gerar tu) |
-| `JWT_ACCESS_EXPIRES_IN` | `15m` |
+| `JWT_ACCESS_EXPIRES_IN` | `24h` |
 | `BCRYPT_SALT_ROUNDS` | `12` |
 | `CLOUDINARY_CLOUD_NAME` | valor da tua conta Cloudinary |
 | `CLOUDINARY_API_KEY` | valor da tua conta Cloudinary |
