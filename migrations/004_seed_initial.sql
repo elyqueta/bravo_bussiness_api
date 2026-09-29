@@ -1,5 +1,5 @@
 -- Seed direto para Neon/Postgres
--- Admin: admin@bravo.co.ao / Bravo@2024
+-- Admin: admin@bravobusiness.co.ao / Bravo#2026!Secure
 -- Categorias: Roupas, Calçados, Acessórios
 -- Produtos: BB-R001, BB-C001, BB-A001
 
@@ -7,8 +7,8 @@
 INSERT INTO users (full_name, email, password_hash, phone, role, status, created_at, updated_at)
 VALUES (
   'Admin Bravo',
-  'admin@bravo.co.ao',
-  '$2b$12$1p3no5Bt52jtg37cWkQS/OdDYYOs6V73AH4ME7GPbknIoJNAGR37i',
+  'admin@bravobusiness.co.ao',
+  '$2b$12$GYb70QC7xwV1g5uneJshyOrmj0DN9EI62HeU1kZZk0OEqM.Vgijuq',
   '923000000',
   'admin',
   'active',
